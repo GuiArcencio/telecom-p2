@@ -113,7 +113,20 @@ module mkThreeLevelIO#(Bool sync_to_line_clock)(ThreeLevelIO);
 
             if (sync_to_line_clock) begin
                 let positive_edge = rxp_sync[1:0] == 'b01 || rxn_sync[1:0] == 'b01;  // {current_bit, previous_bit}
-                // TODO: preencha aqui com a sua lógica
+                let optimal_reset = counter_reset_value >> 2;
+
+                if (positive_edge) begin 
+                    let next_counter_reset_value = counter_max_value;
+
+                    if (counter > optimal_reset) begin
+                        next_counter_reset_value = counter_max_value - 1;
+                    end
+                    else if (counter < optimal_reset) begin
+                        next_counter_reset_value = counter_max_value + 1;
+                    end
+
+                    counter_reset_value <= next_counter_reset_value;
+                end
             end
         endmethod
 
